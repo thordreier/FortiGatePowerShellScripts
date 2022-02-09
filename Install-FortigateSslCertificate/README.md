@@ -1,6 +1,6 @@
 # FortiGate and Let’s Encrypt
 
-This guide describes how to set up automatic renewal of Let’s Encrypt SSL certificates on FortiNet FortiGate firewall, from a Windows machine using win-Acme and a PowerShell script.
+This guide describes how to set up automatic renewal of Let’s Encrypt SSL certificates on FortiNet FortiGate firewall, from a Windows machine using win-acme and a PowerShell script.
 
 
 ## Prerequisites
