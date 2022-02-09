@@ -53,8 +53,8 @@ function Invoke-SSHStreamCommandOrDie ($ShellStream, $Command, $ExpectRegex, $Er
 
 if (-not $Firewall) { $Firewall = $CertCommonName }
 $Firewall, $fwPort = $Firewall -split ':'
-if (-not $CrtPath) { $CrtPath = Join-Path -Path $Path -ChildPath "$($CertCommonName)-chain.pem"}
-if (-not $KeyPath) { $KeyPath = Join-Path -Path $Path -ChildPath "$($CertCommonName)-key.pem"}
+if (-not $CrtPath) { $CrtPath = Join-Path -Path $DirPath -ChildPath "$($CertCommonName)-chain.pem"}
+if (-not $KeyPath) { $KeyPath = Join-Path -Path $DirPath -ChildPath "$($CertCommonName)-key.pem"}
 if (-not $Credential) {$Credential = Get-VaultCredential -Name $Firewall}
 
 $crtContent = (Get-Content -Raw -Path $crtPath) -replace '\r(\n)','$1'
