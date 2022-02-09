@@ -67,18 +67,26 @@ $sshSessionParams = @{
 if ($fwPort) {$sshSessionParams['Port'] = $fwPort}
 
 $sshSession = New-SSHSession @sshSessionParams
-$shellStream = New-SSHShellStream -SSHSession $sshSession
 
-@(
-    @{c=''                                ; e='\s#'}
-    @{c='config vpn certificate local'    ; e='\(local\)\s#'}
-    @{c="edit $CertCommonName"            ; e='\s#'}
-    @{c="set comment `"$Comment`""        ; e='\s#'}
-    @{c="set private-key `"$keyContent`"" ; e='\s#'}
-    @{c="set certificate `"$crtContent`"" ; e='\s#'}
-    @{c='next'                            ; e='\(local\)\s#'}
-    @{c='end'                             ; e='\s#'}
-    @{c='exit'                            ; e=''}
-) | ForEach-Object -Process {
-    Invoke-SSHStreamCommandOrDie -ShellStream $shellStream -Command $_.c -ExpectRegex $_.e
+try
+{
+    $shellStream = New-SSHShellStream -SSHSession $sshSession
+
+    @(
+        @{c=''                                ; e='\s#'}
+        @{c='config vpn certificate local'    ; e='\(local\)\s#'}
+        @{c="edit $CertCommonName"            ; e='\s#'}
+        @{c="set comment `"$Comment`""        ; e='\s#'}
+        @{c="set private-key `"$keyContent`"" ; e='\s#'}
+        @{c="set certificate `"$crtContent`"" ; e='\s#'}
+        @{c='next'                            ; e='\(local\)\s#'}
+        @{c='end'                             ; e='\s#'}
+        @{c='exit'                            ; e=''}
+    ) | ForEach-Object -Process {
+        Invoke-SSHStreamCommandOrDie -ShellStream $shellStream -Command $_.c -ExpectRegex $_.e
+    }
+}
+finally
+{
+    $null = Remove-SSHSession -SSHSession $sshSession
 }
