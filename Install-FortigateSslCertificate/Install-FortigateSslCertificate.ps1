@@ -73,15 +73,25 @@ try
     $shellStream = New-SSHShellStream -SSHSession $sshSession
 
     @(
-        @{c=''                                ; e='\s#'}
-        @{c='config vpn certificate local'    ; e='\(local\)\s#'}
-        @{c="edit $CertCommonName"            ; e='\s#'}
-        @{c="set comment `"$Comment`""        ; e='\s#'}
-        @{c="set private-key `"$keyContent`"" ; e='\s#'}
-        @{c="set certificate `"$crtContent`"" ; e='\s#'}
-        @{c='next'                            ; e='\(local\)\s#'}
-        @{c='end'                             ; e='\s#'}
-        @{c='exit'                            ; e=''}
+        @{c=''                                   ; e='\s#'}
+
+        @{c='config vpn certificate local'       ; e='\(local\)\s#'}
+        @{c="edit $CertCommonName"               ; e='\s#'}
+        @{c="set comment `"$Comment`""           ; e='\s#'}
+        @{c="set private-key `"$keyContent`""    ; e='\s#'}
+        @{c="set certificate `"$crtContent`""    ; e='\s#'}
+        @{c='next'                               ; e='\(local\)\s#'}
+        @{c='end'                                ; e='\s#'}
+
+        # FortiGate doesn't reload certificate before we change it back and forth
+        @{c='config vpn ssl settings'            ; e='\(settings\)\s#'}
+        @{c='set servercert "self-sign"'         ; e='\(settings\)\s#'}
+        @{c='end'                                ; e='\s#'}
+        @{c='config vpn ssl settings'            ; e='\(settings\)\s#'}
+        @{c="set servercert `"$CertCommonName`"" ; e='\(settings\)\s#'}
+        @{c='end'                                ; e='\s#'}
+
+        @{c='exit'                               ; e=''}
     ) | ForEach-Object -Process {
         Invoke-SSHStreamCommandOrDie -ShellStream $shellStream -Command $_.c -ExpectRegex $_.e
     }
